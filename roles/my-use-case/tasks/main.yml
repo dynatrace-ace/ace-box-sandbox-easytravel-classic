@@ -5,8 +5,12 @@
 - include_role:
     name: dt-oneagent-classic
 
-# - include_role:
-#     name: monaco
+- include_role:
+    name: monaco
 
 - include_role:
     name: app-easytravel-classic
+
+- include_role:
+    name: app-easytravel-classic
+    tasks_from: apply-monaco
