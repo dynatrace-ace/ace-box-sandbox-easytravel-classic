@@ -2,7 +2,7 @@
   "applicationIdentifier": "{{ .applicationId }}",
   "filterConfig": {
     "pattern": "{{ .pattern }}",
-    "applicationMatchType": "CONTAINS",
+    "applicationMatchType": "MATCHES",
     "applicationMatchTarget": "DOMAIN"
   }
 }

@@ -5,4 +5,4 @@ config:
 app-detect-easytravel-classic:
   - name: "/easytravel/application-web/app-easytravel-classic.name"
   - applicationId: "/easytravel/application-web/app-easytravel-classic.id"
-  - pattern: "{{ .Env.HOST_IP }}"
+  - pattern: "{{ .Env.INGRESS_DOMAIN }}"
