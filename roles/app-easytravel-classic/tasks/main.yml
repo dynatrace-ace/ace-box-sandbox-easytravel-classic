@@ -54,6 +54,8 @@
         After=network-online.target
 
         [Service]
+        User={{ ace_box_user }}
+        Group={{ ace_box_user }}
         Restart=on-failure
         ExecStart={{ easytravel_classic_install_location }}/weblauncher/weblauncher.sh
         ExecReload=/bin/kill -HUP $MAINPID
@@ -77,12 +79,12 @@
     state: started
     name: easytravel
 
-- name: Wait for Easytravel to be up
-  uri:
-    url: "http://localhost:8080/main"
-    status_code: 200
-    validate_certs: no
-  register: result
-  retries: 60
-  delay: 5
-  until: result.status == 200
+# - name: Wait for Easytravel to be up
+#   uri:
+#     url: "http://localhost:8080/main"
+#     status_code: 200
+#     validate_certs: no
+#   register: result
+#   retries: 60
+#   delay: 5
+#   until: result.status == 200
