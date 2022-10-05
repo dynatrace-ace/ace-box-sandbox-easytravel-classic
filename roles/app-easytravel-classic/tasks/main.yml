@@ -12,6 +12,7 @@
     - apt-transport-https
     - software-properties-common
     - jq
+    - haproxy
 
 - file:
     path: "{{ role_path }}/files"
@@ -24,6 +25,22 @@
     timeout: 300
   when: not easytravel_classic_download_location is exists
 
+- block:
+  - name: Create custom Easytravel config file
+    file:
+      path: "/home/{{ ace_box_user }}/.dynaTrace/easyTravel 2.0.0/easyTravel/config"
+      state: directory
+  - copy:
+      content: |-
+        # Make sure port 8080 is free for HAProxy
+        config.frontendPortRangeStart=8050
+        config.frontendPortRangeEnd=8060
+
+        # Override host
+        config.apacheFrontendPublicUrl={{ ingress_protocol }}://{{ ingress_domain }}:8080
+        config.angularFrontendPublicUrl={{ ingress_protocol }}://{{ ingress_domain }}
+      dest: "/home/{{ ace_box_user }}/.dynaTrace/easyTravel 2.0.0/easyTravel/config/easyTravelLocal.properties"
+
 - name: Run installer
   block:
   - shell: 
@@ -35,15 +52,6 @@
     shell: 
       cmd: "/bin/bash installChromeDeps.sh"
       chdir: "{{ easytravel_classic_install_location }}/resources"
-#   - shell: 
-#       cmd: "sed -i 's|^config.apacheWebServerPort=8079|config.apacheWebServerPort=80|g' easyTravelConfig.properties"
-#       chdir: "{{ easytravel_classic_install_location }}/resources"
-#   - shell: 
-#       cmd: "sed -i 's|^config.nginxWebServerPort=8079|config.nginxWebServerPort=80|g' easyTravelConfig.properties"
-#       chdir: "{{ easytravel_classic_install_location }}/resources"
-#   - shell: 
-#       cmd: "sed -i 's|^config.weblauncherPort=8094|config.weblauncherPort=8080|g' easyTravelConfig.properties"
-#       chdir: "{{ easytravel_classic_install_location }}/resources"
   - become: true
     become_user: root
     copy:
@@ -79,12 +87,43 @@
     state: started
     name: easytravel
 
-# - name: Wait for Easytravel to be up
-#   uri:
-#     url: "http://localhost:8080/main"
-#     status_code: 200
-#     validate_certs: no
-#   register: result
-#   retries: 60
-#   delay: 5
-#   until: result.status == 200
+# Set up HAProxy
+- name: Add HAProxy Easytravel config
+  become: true
+  become_user: root
+  blockinfile:
+    path: /etc/haproxy/haproxy.cfg
+    block: |
+      frontend easytravel
+        bind *:80
+        bind *:8080
+        acl adminui dst_port 8080
+        use_backend easytravel-adminui if adminui
+        acl angular dst_port 80
+        use_backend easytravel-angular if angular
+
+      backend easytravel-adminui
+        mode http
+        server s1 localhost:8094
+
+      backend easytravel-angular
+        mode http
+        server s1 localhost:9080
+
+- name: Restart HAProxy
+  become: true
+  become_user: root
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: yes
+    name: haproxy
+
+- name: Wait for Easytravel to be up
+  uri:
+    url: "http://localhost:8080/main"
+    status_code: 200
+    validate_certs: no
+  register: result
+  retries: 60
+  delay: 5
+  until: result.status == 200

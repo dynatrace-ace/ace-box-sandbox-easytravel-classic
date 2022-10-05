@@ -1,8 +1,20 @@
 
 config:
-  - app-detect-easytravel-classic: "rule.json"
+  - app-detect-host: "rule.json"
+  - app-detect-domain: "rule.json"
+  - app-detect-ip: "rule.json"
   
-app-detect-easytravel-classic:
+app-detect-host:
+  - name: "/easytravel/application-web/app-easytravel-classic.name"
+  - applicationId: "/easytravel/application-web/app-easytravel-classic.id"
+  - pattern: "{{ .Env.HOST_NAME }}"
+
+app-detect-domain:
   - name: "/easytravel/application-web/app-easytravel-classic.name"
   - applicationId: "/easytravel/application-web/app-easytravel-classic.id"
   - pattern: "{{ .Env.INGRESS_DOMAIN }}"
+
+app-detect-ip:
+  - name: "/easytravel/application-web/app-easytravel-classic.name"
+  - applicationId: "/easytravel/application-web/app-easytravel-classic.id"
+  - pattern: "{{ .Env.HOST_IP }}"

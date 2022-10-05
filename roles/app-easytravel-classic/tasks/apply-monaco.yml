@@ -2,6 +2,10 @@
 - set_fact:
     monaco_projects_folder: "{{ role_path }}/files/monaco/projects"
 
+- name: Easytravel - Get hostname
+  command: hostname -A
+  register: host_name_raw
+
 - name: Easytravel - Apply Monitoring as Code
   include_role:
     name: monaco
@@ -9,7 +13,9 @@
     apply:
       environment:
         HOST_GROUP_NAME: "{{ host_group }}"
+        HOST_NAME: "{{ host_name_raw.stdout | trim }}"
         INGRESS_DOMAIN: "{{ ingress_domain }}"
+        HOST_IP: "{{ host_ip | default(127.0.0.1) }}"
   vars:
     monaco_project: "easytravel"
     monaco_projects_root: "{{ monaco_projects_folder }}" 
