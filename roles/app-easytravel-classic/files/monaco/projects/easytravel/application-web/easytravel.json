@@ -41,7 +41,7 @@
       "fetchRequests": true,
       "xmlHttpRequest": true,
       "javaScriptFrameworkSupport": {
-        "angular": false,
+        "angular": true,
         "dojo": false,
         "extJS": false,
         "icefaces": true,
