@@ -1,5 +1,7 @@
 ---
 - name: Replace hosts file
+  become: true
+  become_user: root
   ansible.builtin.lineinfile:
     path: /etc/hosts
     search_string: "127.0.0.1"
