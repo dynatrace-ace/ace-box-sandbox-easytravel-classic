@@ -1,4 +1,13 @@
 ---
+- name: Replace hosts file
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    search_string: "127.0.0.1"
+    line: "127.0.0.1 localhost {{ ingress_domain }}"
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Install apt packages
   become: true
   become_user: root
