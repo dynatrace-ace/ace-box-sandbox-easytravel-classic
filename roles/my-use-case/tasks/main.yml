@@ -2,8 +2,8 @@
 # - include_role:
 #     name: dt-activegate
 
-# - include_role:
-#     name: dt-oneagent-classic
+- include_role:
+    name: dt-oneagent-classic
 
 # - include_role:
 #     name: monaco
